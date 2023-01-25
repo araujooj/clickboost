@@ -1,90 +1,106 @@
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
+'use client'
+
+import { clear } from 'console'
+import { useEffect, useRef, useState } from 'react'
 import styles from './page.module.css'
 
-const inter = Inter({ subsets: ['latin'] })
+
+const typeText = (
+  text: string,
+  element: HTMLElement,
+  instant: boolean = false
+) => {
+  if (instant) return element.innerHTML = text
+
+  const textArray = text.split('')
+  const interval = setInterval(() => {
+    if (!textArray.length) {
+      clearInterval(interval)
+      return
+    }
+    element.innerHTML += textArray.shift()
+  }, 50)
+}
+
+
+const DEFAULT_PROMPT_RESPONSE = "Ask this ChatGPT clone a question in the prompt below."
+const LOADING_PROMPT_RESPONSE = "Loading..."
+
 
 export default function Home() {
+  const responseDivRef = useRef<HTMLDivElement>(null)
+  const promptDivRef = useRef<HTMLTextAreaElement>(null)
+  const [promptResponse, setPromptResponse] = useState<string>('')
+
+  const onPromptButtonClicked = async () => {
+    const prompt = promptDivRef.current?.value
+    console.log('submitting to OpenAI', prompt)
+    if (!prompt) return alert('Please enter a prompt')
+
+    resetPromptResponse(LOADING_PROMPT_RESPONSE)
+
+    const response = await fetch('/api/open-ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ prompt })
+    })
+    if (!response.ok) throw new Error('Something went wrong')
+    
+    const data = await response.json()
+    setPromptResponse(data.result)
+  }
+
+  const resetPromptResponse = (text: string = '') => {
+    if (!responseDivRef.current) return
+    responseDivRef.current.innerHTML = text
+  }
+
+  const onClearButtonClicked = () => {
+    resetPromptResponse()
+  }
+
+  useEffect(() => {
+    if (!responseDivRef.current) return
+    typeText(DEFAULT_PROMPT_RESPONSE, responseDivRef.current, true)
+  }, [])
+
+  useEffect(() => {
+    resetPromptResponse()
+    if (responseDivRef.current) {
+      typeText(promptResponse, responseDivRef.current)
+    }
+  }, [promptResponse])
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      <div style={{ 
+        width: '100%',
+        whiteSpace: 'pre-wrap',
+        marginBottom: '30px'
+      }} ref={responseDivRef} />
+      <div style={{
+        width: '100%',
+        textAlign: 'center'
+      }}>
+        <textarea
+          ref={promptDivRef}
+          style={{
+            marginBottom: '-5px',
+            width: '70%',
+            resize: 'vertical',
+            marginRight: '10px'
+          }}
+          defaultValue="Create a component that displays a list of images in react."
         />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button 
+          onClick={onPromptButtonClicked}
+          style={{ marginRight: '10px' }}
         >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+          Submit
+        </button>
+        <button onClick={onClearButtonClicked}>Clear</button>
       </div>
     </main>
   )
