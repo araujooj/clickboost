@@ -1,27 +1,9 @@
 'use client'
 
-import { clear } from 'console'
 import { useEffect, useRef, useState } from 'react'
+import { fetchPrompt } from './fetchPrompt'
 import styles from './page.module.css'
-
-
-const typeText = (
-  text: string,
-  element: HTMLElement,
-  instant: boolean = false
-) => {
-  if (instant) return element.innerHTML = text
-
-  const textArray = text.split('')
-  const interval = setInterval(() => {
-    if (!textArray.length) {
-      clearInterval(interval)
-      return
-    }
-    element.innerHTML += textArray.shift()
-  }, 50)
-}
-
+import { typeText } from './typeText'
 
 const DEFAULT_PROMPT_RESPONSE = "Ask this ChatGPT clone a question in the prompt below."
 const LOADING_PROMPT_RESPONSE = "Loading..."
@@ -34,31 +16,22 @@ export default function Home() {
 
   const onPromptButtonClicked = async () => {
     const prompt = promptDivRef.current?.value
-    console.log('submitting to OpenAI', prompt)
     if (!prompt) return alert('Please enter a prompt')
-
-    resetPromptResponse(LOADING_PROMPT_RESPONSE)
-
-    const response = await fetch('/api/open-ai', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ prompt })
-    })
-    if (!response.ok) throw new Error('Something went wrong')
     
-    const data = await response.json()
-    setPromptResponse(data.result)
+    clearPromptResponse(LOADING_PROMPT_RESPONSE)
+
+    const response = await fetchPrompt(prompt)
+  
+    setPromptResponse(response)
   }
 
-  const resetPromptResponse = (text: string = '') => {
+  const clearPromptResponse = (text: string = '') => {
     if (!responseDivRef.current) return
-    responseDivRef.current.innerHTML = text
+    typeText(text, responseDivRef.current, true)
   }
 
   const onClearButtonClicked = () => {
-    resetPromptResponse()
+    clearPromptResponse(DEFAULT_PROMPT_RESPONSE)
   }
 
   useEffect(() => {
@@ -67,7 +40,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    resetPromptResponse()
+    clearPromptResponse()
     if (responseDivRef.current) {
       typeText(promptResponse, responseDivRef.current)
     }
