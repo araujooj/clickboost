@@ -27,7 +27,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       max_tokens: 3500,
     })
 
-    res.status(200).json({ result: response.data.choices[0].text });
+    res.status(200).json({ 
+      result: response.data.choices[0].text,
+      full: response.data
+    });
   } catch (err) {
     res.status(500).json({ error: err });
   }

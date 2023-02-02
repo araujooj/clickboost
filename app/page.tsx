@@ -48,11 +48,14 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div style={{ 
-        width: '100%',
-        whiteSpace: 'pre-wrap',
-        marginBottom: '30px'
-      }} ref={responseDivRef} />
+      <div 
+        style={{ 
+          width: '100%',
+          whiteSpace: 'pre-wrap',
+          marginBottom: '30px'
+        }} 
+        className="underline"
+        ref={responseDivRef} />
       <div style={{
         width: '100%',
         textAlign: 'center'

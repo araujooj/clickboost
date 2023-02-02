@@ -1,6 +1,7 @@
 
-interface OpenAIResponse {
+export interface OpenAIResponse {
   result?: string,
+  full?: string,
   error?: unknown
 }
 
@@ -18,6 +19,7 @@ export const fetchPrompt = async (prompt: string) => {
   
   if (data.error) throw new Error(data.error as string)
   if (!data.result) throw new Error('No result found')
+  console.log(data.full)
 
   return data.result
 }
