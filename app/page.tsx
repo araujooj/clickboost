@@ -1,78 +1,85 @@
-'use client'
+"use client"
 
-import { useEffect, useRef, useState } from 'react'
-import { fetchPrompt } from './fetchPrompt'
-import styles from './page.module.css'
-import { typeText } from './typeText'
-
-const DEFAULT_PROMPT_RESPONSE = "Ask this ChatGPT clone a question in the prompt below."
-const LOADING_PROMPT_RESPONSE = "Loading..."
-
+import { fetchPrompt } from "@lib/fetchPrompt"
+import lang from "@lib/lang"
+import { typeText } from "@lib/typeText"
+import { useEffect, useRef, useState } from "react"
 
 export default function Home() {
   const responseDivRef = useRef<HTMLDivElement>(null)
-  const promptDivRef = useRef<HTMLTextAreaElement>(null)
-  const [promptResponse, setPromptResponse] = useState<string>('')
+  const promptSectionRef = useRef<HTMLDivElement>(null)
+  const promptTextAreaRef = useRef<HTMLTextAreaElement>(null)
+  const [promptResponse, setPromptResponse] = useState<string>("")
+  let typing = useRef<any>(() => {})
+
+  useEffect(() => {
+    if (!responseDivRef.current || !promptSectionRef.current) return
+    typeText(lang.defaultPrompt, responseDivRef.current, true)
+
+    const promptArea = new ResizeObserver(resizeResponseDiv)
+    promptArea.observe(promptSectionRef.current)
+
+    return () => {
+      promptArea.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (
+      !responseDivRef.current ||
+      responseDivRef.current.innerText === lang.defaultPrompt
+    )
+      return
+
+    clearPromptResponse()
+    typing.current = typeText(promptResponse, responseDivRef.current)
+  }, [promptResponse])
 
   const onPromptButtonClicked = async () => {
-    const prompt = promptDivRef.current?.value
-    if (!prompt) return alert('Please enter a prompt')
-    
-    clearPromptResponse(LOADING_PROMPT_RESPONSE)
+    const prompt = promptTextAreaRef.current?.value
+    if (!prompt) return alert("Please enter a prompt")
 
+    // Loading...
+    clearPromptResponse(lang.loading)
+
+    // Response...
     const response = await fetchPrompt(prompt)
-  
     setPromptResponse(response)
   }
 
-  const clearPromptResponse = (text: string = '') => {
-    if (!responseDivRef.current) return
+  const clearPromptResponse = (text: string = "") => {
+    if (!responseDivRef.current || !typing.current) return
+    typing.current()
     typeText(text, responseDivRef.current, true)
   }
 
   const onClearButtonClicked = () => {
-    clearPromptResponse(DEFAULT_PROMPT_RESPONSE)
+    clearPromptResponse(lang.defaultPrompt)
   }
 
-  useEffect(() => {
+  const resizeResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
     if (!responseDivRef.current) return
-    typeText(DEFAULT_PROMPT_RESPONSE, responseDivRef.current, true)
-  }, [])
-
-  useEffect(() => {
-    clearPromptResponse()
-    if (responseDivRef.current) {
-      typeText(promptResponse, responseDivRef.current)
-    }
-  }, [promptResponse])
+    responseDivRef.current.style.paddingBottom = `calc(${element.clientHeight}px + 1.5rem)`
+  }
 
   return (
-    <main className={styles.main}>
-      <div 
-        style={{ 
-          width: '100%',
-          whiteSpace: 'pre-wrap',
-          marginBottom: '30px'
-        }} 
-        className="underline"
-        ref={responseDivRef} />
-      <div style={{
-        width: '100%',
-        textAlign: 'center'
-      }}>
+    <main className="flex max-h-screen min-h-screen flex-col">
+      <div
+        className="min-h-screen w-full overflow-y-auto whitespace-pre-wrap px-6 pt-6"
+        ref={responseDivRef}
+      />
+      <div
+        ref={promptSectionRef}
+        className="fixed bottom-0 w-full flex-shrink bg-gray-800 py-3 text-center"
+      >
         <textarea
-          ref={promptDivRef}
-          style={{
-            marginBottom: '-5px',
-            width: '70%',
-            resize: 'vertical',
-            marginRight: '10px'
-          }}
+          ref={promptTextAreaRef}
+          className="resize-vertical mr-3 -mb-2 w-3/4 p-2"
           defaultValue="Create a component that displays a list of images in react."
         />
-        <button 
+        <button
           onClick={onPromptButtonClicked}
-          style={{ marginRight: '10px' }}
+          className="mr-3 rounded-sm bg-indigo-700 px-1.5 py-0.5"
         >
           Submit
         </button>

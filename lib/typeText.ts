@@ -3,9 +3,9 @@ export const typeText = (
   element: HTMLElement,
   instant: boolean = false
 ) => {
-  if (instant) return element.innerHTML = text
+  if (instant) return (element.innerHTML = text)
 
-  const textArray = text.split('')
+  const textArray = text.split("")
   const interval = setInterval(() => {
     if (!textArray.length) {
       clearInterval(interval)
@@ -13,4 +13,6 @@ export const typeText = (
     }
     element.innerHTML += textArray.shift()
   }, 50)
+
+  return () => clearInterval(interval)
 }
