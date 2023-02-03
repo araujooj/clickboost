@@ -6,6 +6,7 @@ import { typeText } from "@lib/typeText"
 import { useEffect, useRef, useState } from "react"
 
 export default function Home() {
+  const responseContainerDivRef = useRef<HTMLDivElement>(null)
   const responseDivRef = useRef<HTMLDivElement>(null)
   const promptSectionRef = useRef<HTMLDivElement>(null)
   const promptTextAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -13,14 +14,23 @@ export default function Home() {
   let typing = useRef<any>(() => {})
 
   useEffect(() => {
-    if (!responseDivRef.current || !promptSectionRef.current) return
+    if (
+      !responseContainerDivRef.current ||
+      !responseDivRef.current ||
+      !promptSectionRef.current
+    )
+      return
     typeText(lang.defaultPrompt, responseDivRef.current, true)
 
     const promptArea = new ResizeObserver(resizeResponseDiv)
     promptArea.observe(promptSectionRef.current)
 
+    const responseArea = new ResizeObserver(scrollResponseDiv)
+    responseArea.observe(responseDivRef.current)
+
     return () => {
       promptArea.disconnect()
+      responseArea.disconnect()
     }
   }, [])
 
@@ -58,16 +68,23 @@ export default function Home() {
   }
 
   const resizeResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
-    if (!responseDivRef.current) return
-    responseDivRef.current.style.paddingBottom = `calc(${element.clientHeight}px + 1.5rem)`
+    if (!responseContainerDivRef.current) return
+    responseContainerDivRef.current.style.paddingBottom = `calc(${element.clientHeight}px + 1.5rem)`
+  }
+
+  const scrollResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
+    if (!responseContainerDivRef.current) return
+    responseContainerDivRef.current.scrollTop = element.scrollHeight
   }
 
   return (
     <main className="flex max-h-screen min-h-screen flex-col">
       <div
-        className="min-h-screen w-full overflow-y-auto whitespace-pre-wrap px-6 pt-6"
-        ref={responseDivRef}
-      />
+        className="w-full overflow-y-auto whitespace-pre-wrap px-6 pt-6"
+        ref={responseContainerDivRef}
+      >
+        <div ref={responseDivRef} />
+      </div>
       <div
         ref={promptSectionRef}
         className="fixed bottom-0 w-full flex-shrink bg-gray-800 py-3 text-center"

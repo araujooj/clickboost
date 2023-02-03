@@ -1,9 +1,16 @@
+export const typeTextOptions = {
+  timePerCharacter: 25,
+}
+
 export const typeText = (
   text: string,
   element: HTMLElement,
   instant: boolean = false
 ) => {
-  if (instant) return (element.innerHTML = text)
+  if (instant) {
+    element.innerHTML = text
+    return
+  }
 
   const textArray = text.split("")
   const interval = setInterval(() => {
@@ -12,7 +19,7 @@ export const typeText = (
       return
     }
     element.innerHTML += textArray.shift()
-  }, 50)
+  }, typeTextOptions.timePerCharacter)
 
   return () => clearInterval(interval)
 }

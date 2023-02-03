@@ -12,10 +12,10 @@ export const fetchPrompt = async (prompt: string) => {
     },
     body: JSON.stringify({ prompt }),
   })
+
   if (!response.ok) throw new Error("Something went wrong")
 
   const data: OpenAIResponse = await response.json()
-
   if (data.error) throw new Error(data.error as string)
   if (!data.result) throw new Error("No result found")
 
