@@ -1,7 +1,7 @@
 export const lang = {
   loading: "Loading...",
-  promptDefault: "Ask this ChatGPT clone a question in the prompt below.",
-  promptPlaceholder: "Ask your question here...and make it good!",
+  promptDefault: "Ask OpenAI a question in the prompt below.",
+  promptPlaceholder: "Make it good and detailed for a better response!",
 }
 
 /* spellchecker: disable */

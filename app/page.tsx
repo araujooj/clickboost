@@ -38,7 +38,11 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    if (!responseDivRef.current) return
+    if (
+      !responseDivRef.current ||
+      responseDivRef.current.innerHTML === lang.promptDefault
+    )
+      return
 
     clearPromptResponse()
     typing.current = typeText(promptResponse, responseDivRef.current)
