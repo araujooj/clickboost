@@ -101,19 +101,19 @@ export default function Home() {
         <textarea
           ref={promptTextAreaRef}
           placeholder={lang.promptPlaceholder}
-          className="resize-vertical mr-3 -mb-2 w-3/4 bg-neutral-700 p-2"
+          className="resize-vertical mr-3 -mb-2 w-3/4 rounded bg-neutral-700 p-2"
         />
         <button
           onClick={onPromptButtonClicked}
           disabled={isLoading}
-          className="mr-3 rounded-sm bg-indigo-700 px-1.5 py-0.5 transition-colors duration-200 hover:bg-indigo-500 disabled:opacity-75"
+          className="mr-3 rounded bg-indigo-700 px-1.5 py-0.5 transition-colors duration-200 hover:bg-indigo-500 disabled:opacity-75"
         >
           Submit
         </button>
         <button
           onClick={onClearButtonClicked}
           disabled={isLoading}
-          className="rounded-sm bg-transparent px-1.5 py-0.5 transition-colors duration-200 hover:bg-gray-700"
+          className="rounded bg-transparent px-1.5 py-0.5 transition-colors duration-200 hover:bg-gray-700"
         >
           Clear
         </button>
