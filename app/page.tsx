@@ -3,14 +3,17 @@
 import { fetchPrompt } from "@lib/fetchPrompt"
 import lang from "@lib/lang"
 import { typeText } from "@lib/typeText"
-import { useEffect, useRef, useState } from "react"
+import { MouseEvent, useEffect, useRef, useState } from "react"
 
 export default function Home() {
   const responseContainerDivRef = useRef<HTMLDivElement>(null)
   const responseDivRef = useRef<HTMLDivElement>(null)
   const promptSectionRef = useRef<HTMLDivElement>(null)
   const promptTextAreaRef = useRef<HTMLTextAreaElement>(null)
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [promptResponse, setPromptResponse] = useState<string>("")
+
   let typing = useRef<any>(() => {})
 
   useEffect(() => {
@@ -45,16 +48,22 @@ export default function Home() {
     typing.current = typeText(promptResponse, responseDivRef.current)
   }, [promptResponse])
 
-  const onPromptButtonClicked = async () => {
+  const onPromptButtonClicked = async (ev: MouseEvent<HTMLButtonElement>) => {
     const prompt = promptTextAreaRef.current?.value
     if (!prompt) return alert("Please enter a prompt")
 
     // Loading...
+    setIsLoading(true)
     clearPromptResponse(lang.loading)
 
     // Response...
-    const response = await fetchPrompt(prompt)
-    setPromptResponse(response)
+    try {
+      const response = await fetchPrompt(prompt)
+      setPromptResponse(response)
+      setIsLoading(false)
+    } catch (err) {
+      setIsLoading(false)
+    }
   }
 
   const clearPromptResponse = (text: string = "") => {
@@ -91,16 +100,23 @@ export default function Home() {
       >
         <textarea
           ref={promptTextAreaRef}
-          className="resize-vertical mr-3 -mb-2 w-3/4 p-2"
           defaultValue="Create a component that displays a list of images in react."
+          className="resize-vertical mr-3 -mb-2 w-3/4 bg-gray-700 p-2"
         />
         <button
           onClick={onPromptButtonClicked}
-          className="mr-3 rounded-sm bg-indigo-700 px-1.5 py-0.5"
+          disabled={isLoading}
+          className="mr-3 rounded-sm bg-indigo-700 px-1.5 py-0.5 transition-colors duration-200 hover:bg-indigo-500 disabled:opacity-75"
         >
           Submit
         </button>
-        <button onClick={onClearButtonClicked}>Clear</button>
+        <button
+          onClick={onClearButtonClicked}
+          disabled={isLoading}
+          className="rounded-sm bg-transparent px-1.5 py-0.5 transition-colors duration-200 hover:bg-gray-700"
+        >
+          Clear
+        </button>
       </div>
     </main>
   )
