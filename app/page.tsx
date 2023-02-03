@@ -87,7 +87,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex max-h-screen min-h-screen flex-col">
+    <main className="flex max-h-screen min-h-screen flex-col bg-neutral-900">
       <div
         className="w-full overflow-y-auto whitespace-pre-wrap px-6 pt-6"
         ref={responseContainerDivRef}
@@ -96,12 +96,12 @@ export default function Home() {
       </div>
       <div
         ref={promptSectionRef}
-        className="fixed bottom-0 w-full flex-shrink bg-gray-800 py-3 text-center"
+        className="fixed bottom-0 w-full flex-shrink bg-neutral-800 py-3 text-center"
       >
         <textarea
           ref={promptTextAreaRef}
           defaultValue="Create a component that displays a list of images in react."
-          className="resize-vertical mr-3 -mb-2 w-3/4 bg-gray-700 p-2"
+          className="resize-vertical mr-3 -mb-2 w-3/4 bg-neutral-700 p-2"
         />
         <button
           onClick={onPromptButtonClicked}
