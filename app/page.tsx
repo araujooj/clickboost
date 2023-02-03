@@ -14,7 +14,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [promptResponse, setPromptResponse] = useState<string>("")
 
-  let typing = useRef<any>(() => {})
+  let typing = useRef<() => void>()
 
   useEffect(() => {
     if (
@@ -23,7 +23,7 @@ export default function Home() {
       !promptSectionRef.current
     )
       return
-    typeText(lang.defaultPrompt, responseDivRef.current, true)
+    typeText(lang.promptDefault, responseDivRef.current, true)
 
     const promptArea = new ResizeObserver(resizeResponseDiv)
     promptArea.observe(promptSectionRef.current)
@@ -38,11 +38,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    if (
-      !responseDivRef.current ||
-      responseDivRef.current.innerText === lang.defaultPrompt
-    )
-      return
+    if (!responseDivRef.current) return
 
     clearPromptResponse()
     typing.current = typeText(promptResponse, responseDivRef.current)
@@ -67,13 +63,13 @@ export default function Home() {
   }
 
   const clearPromptResponse = (text: string = "") => {
-    if (!responseDivRef.current || !typing.current) return
-    typing.current()
+    if (!responseDivRef.current) return
+    if (typing.current) typing.current()
     typeText(text, responseDivRef.current, true)
   }
 
   const onClearButtonClicked = () => {
-    clearPromptResponse(lang.defaultPrompt)
+    clearPromptResponse(lang.promptDefault)
   }
 
   const resizeResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
@@ -100,7 +96,7 @@ export default function Home() {
       >
         <textarea
           ref={promptTextAreaRef}
-          defaultValue="Create a component that displays a list of images in react."
+          placeholder={lang.promptPlaceholder}
           className="resize-vertical mr-3 -mb-2 w-3/4 bg-neutral-700 p-2"
         />
         <button
