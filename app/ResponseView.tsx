@@ -2,15 +2,15 @@ import lang from "@lib/lang"
 import { typeText } from "@lib/typeText"
 import { useEffect, useRef } from "react"
 
-interface ResponsesProps {
+interface ResponseViewProps {
   isLoading: boolean
   promptResponse: string
 }
 
-export default function Responses({
+export default function ResponseView({
   promptResponse,
   isLoading,
-}: ResponsesProps) {
+}: ResponseViewProps) {
   const responseContainerRef = useRef<HTMLDivElement>(null)
   const responseRef = useRef<HTMLSpanElement>(null)
   let typing = useRef<() => void>()

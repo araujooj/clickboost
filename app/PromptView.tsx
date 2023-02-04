@@ -1,12 +1,15 @@
 import lang from "@lib/lang"
 import { MouseEvent, useRef } from "react"
 
-interface PromptProps {
+interface PromptViewProps {
   isLoading: boolean
   onSubmitClicked: (prompt: string) => Promise<void>
 }
 
-export default function Prompt({ isLoading, onSubmitClicked }: PromptProps) {
+export default function PromptView({
+  isLoading,
+  onSubmitClicked,
+}: PromptViewProps) {
   const promptTextAreaRef = useRef<HTMLTextAreaElement>(null)
 
   const onSubmitButtonClicked = (ev: MouseEvent<HTMLButtonElement>) => {

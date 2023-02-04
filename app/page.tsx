@@ -2,8 +2,8 @@
 
 import { fetchPrompt } from "@lib/fetchPrompt"
 import { useState } from "react"
-import Prompt from "./Prompt"
-import Responses from "./Responses"
+import PromptView from "./PromptView"
+import ResponseView from "./ResponseView"
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -25,8 +25,8 @@ export default function Home() {
 
   return (
     <main className="flex max-h-screen min-h-screen flex-col bg-neutral-900">
-      <Responses isLoading={isLoading} promptResponse={promptResponse} />
-      <Prompt isLoading={isLoading} onSubmitClicked={onPromptSubmit} />
+      <ResponseView isLoading={isLoading} promptResponse={promptResponse} />
+      <PromptView isLoading={isLoading} onSubmitClicked={onPromptSubmit} />
     </main>
   )
 }
