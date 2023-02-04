@@ -25,14 +25,14 @@ export default function Home() {
       return
     typeText(lang.promptDefault, responseDivRef.current, true)
 
-    const promptArea = new ResizeObserver(resizeResponseDiv)
-    promptArea.observe(promptSectionRef.current)
+    // const promptArea = new ResizeObserver(resizeResponseDiv)
+    // promptArea.observe(promptSectionRef.current)
 
     const responseArea = new ResizeObserver(scrollResponseDiv)
     responseArea.observe(responseDivRef.current)
 
     return () => {
-      promptArea.disconnect()
+      // promptArea.disconnect()
       responseArea.disconnect()
     }
   }, [])
@@ -64,6 +64,7 @@ export default function Home() {
     } catch (err) {
       setIsLoading(false)
     }
+    // console.log(ev)
   }
 
   const clearPromptResponse = (text: string = "") => {
@@ -76,27 +77,28 @@ export default function Home() {
     clearPromptResponse(lang.promptDefault)
   }
 
-  const resizeResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
-    if (!responseContainerDivRef.current) return
-    responseContainerDivRef.current.style.paddingBottom = `calc(${element.clientHeight}px + 1.5rem)`
-  }
+  // const resizeResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
+  //   if (!responseContainerDivRef.current) return
+  //   responseContainerDivRef.current.style.paddingBottom = `calc(${element.clientHeight}px + 1.5rem)`
+  // }
 
   const scrollResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
     if (!responseContainerDivRef.current) return
     responseContainerDivRef.current.scrollTop = element.scrollHeight
+    // element.scrollTop = element.scrollHeight
   }
 
   return (
     <main className="flex max-h-screen min-h-screen flex-col bg-neutral-900">
       <div
-        className="w-full overflow-y-auto whitespace-pre-wrap px-6 pt-6"
+        className="w-full flex-grow overflow-y-auto whitespace-pre-wrap p-6"
         ref={responseContainerDivRef}
       >
         <div ref={responseDivRef} />
       </div>
       <div
         ref={promptSectionRef}
-        className="fixed bottom-0 w-full flex-shrink bg-neutral-800 py-3 text-center"
+        className="sticky bottom-0 w-full flex-shrink bg-neutral-800 py-3 text-center"
       >
         <textarea
           ref={promptTextAreaRef}
@@ -118,6 +120,11 @@ export default function Home() {
           Clear
         </button>
       </div>
+      {/* <Prompt
+        isLoading={isLoading}
+        onSubmitClicked={onPromptButtonClicked}
+        onClearClicked={onClearButtonClicked}
+      /> */}
     </main>
   )
 }

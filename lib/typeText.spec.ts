@@ -31,7 +31,7 @@ describe("typeText", () => {
       setTimeout(resolve, text.length * typeTextOptions.timePerCharacter + 100)
     )
 
-    const cancelTime = 110
+    const cancelTime = 115
     const cancelPromise = new Promise<void>((resolve) =>
       setTimeout(() => {
         typing && typing()
