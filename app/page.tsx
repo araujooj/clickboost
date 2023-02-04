@@ -3,12 +3,12 @@
 import { fetchPrompt } from "@lib/fetchPrompt"
 import lang from "@lib/lang"
 import { typeText } from "@lib/typeText"
-import { MouseEvent, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import Prompt from "./Prompt"
 
 export default function Home() {
   const responseContainerDivRef = useRef<HTMLDivElement>(null)
   const responseDivRef = useRef<HTMLDivElement>(null)
-  const promptSectionRef = useRef<HTMLDivElement>(null)
   const promptTextAreaRef = useRef<HTMLTextAreaElement>(null)
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -17,22 +17,13 @@ export default function Home() {
   let typing = useRef<() => void>()
 
   useEffect(() => {
-    if (
-      !responseContainerDivRef.current ||
-      !responseDivRef.current ||
-      !promptSectionRef.current
-    )
-      return
+    if (!responseContainerDivRef.current || !responseDivRef.current) return
     typeText(lang.promptDefault, responseDivRef.current, true)
-
-    // const promptArea = new ResizeObserver(resizeResponseDiv)
-    // promptArea.observe(promptSectionRef.current)
 
     const responseArea = new ResizeObserver(scrollResponseDiv)
     responseArea.observe(responseDivRef.current)
 
     return () => {
-      // promptArea.disconnect()
       responseArea.disconnect()
     }
   }, [])
@@ -48,10 +39,7 @@ export default function Home() {
     typing.current = typeText(promptResponse, responseDivRef.current)
   }, [promptResponse])
 
-  const onPromptButtonClicked = async (ev: MouseEvent<HTMLButtonElement>) => {
-    const prompt = promptTextAreaRef.current?.value
-    if (!prompt) return alert("Please enter a prompt")
-
+  const onPromptSubmit = async (prompt: string) => {
     // Loading...
     setIsLoading(true)
     clearPromptResponse(lang.loading)
@@ -64,7 +52,6 @@ export default function Home() {
     } catch (err) {
       setIsLoading(false)
     }
-    // console.log(ev)
   }
 
   const clearPromptResponse = (text: string = "") => {
@@ -77,15 +64,9 @@ export default function Home() {
     clearPromptResponse(lang.promptDefault)
   }
 
-  // const resizeResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
-  //   if (!responseContainerDivRef.current) return
-  //   responseContainerDivRef.current.style.paddingBottom = `calc(${element.clientHeight}px + 1.5rem)`
-  // }
-
   const scrollResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
     if (!responseContainerDivRef.current) return
     responseContainerDivRef.current.scrollTop = element.scrollHeight
-    // element.scrollTop = element.scrollHeight
   }
 
   return (
@@ -96,35 +77,7 @@ export default function Home() {
       >
         <div ref={responseDivRef} />
       </div>
-      <div
-        ref={promptSectionRef}
-        className="sticky bottom-0 w-full flex-shrink bg-neutral-800 py-3 text-center"
-      >
-        <textarea
-          ref={promptTextAreaRef}
-          placeholder={lang.promptPlaceholder}
-          className="resize-vertical mr-3 -mb-2 w-3/4 rounded bg-neutral-700 p-2"
-        />
-        <button
-          onClick={onPromptButtonClicked}
-          disabled={isLoading}
-          className="mr-3 rounded bg-indigo-700 px-1.5 py-0.5 transition-colors duration-200 hover:bg-indigo-500 disabled:opacity-75"
-        >
-          Submit
-        </button>
-        <button
-          onClick={onClearButtonClicked}
-          disabled={isLoading}
-          className="rounded bg-transparent px-1.5 py-0.5 transition-colors duration-200 hover:bg-gray-700"
-        >
-          Clear
-        </button>
-      </div>
-      {/* <Prompt
-        isLoading={isLoading}
-        onSubmitClicked={onPromptButtonClicked}
-        onClearClicked={onClearButtonClicked}
-      /> */}
+      <Prompt isLoading={isLoading} onSubmitClicked={onPromptSubmit} />
     </main>
   )
 }
