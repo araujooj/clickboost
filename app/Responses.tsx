@@ -17,9 +17,12 @@ export default function Responses({
 
   useEffect(() => {
     if (!responseContainerRef.current || !responseRef.current) return
+
     typeText(lang.promptDefault, responseRef.current, true)
+
     const responseArea = new ResizeObserver(scrollResponseDiv)
     responseArea.observe(responseRef.current)
+
     return () => {
       responseArea.disconnect()
       typing.current?.()
@@ -36,8 +39,9 @@ export default function Responses({
     if (
       promptResponse === "" &&
       responseRef.current.innerHTML === lang.promptDefault
-    )
+    ) {
       return
+    }
 
     setPromptResponse()
 
@@ -46,12 +50,14 @@ export default function Responses({
 
   const setPromptResponse = (text: string = "") => {
     if (!responseRef.current) return
+
     if (typing.current) typing.current()
     typeText(text, responseRef.current, true)
   }
 
   const scrollResponseDiv = ([{ target: element }]: ResizeObserverEntry[]) => {
     if (!responseContainerRef.current) return
+
     responseContainerRef.current.scrollTop = element.scrollHeight
   }
 
