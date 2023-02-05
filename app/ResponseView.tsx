@@ -66,8 +66,10 @@ export default function ResponseView({
       className="w-full flex-grow overflow-y-auto whitespace-pre-wrap p-6"
       ref={responseContainerRef}
     >
-      <span ref={responseRef} />
-      <span className="mx-1 -mb-0.5 inline-block h-4 w-1.5 animate-blink bg-white" />
+      <span
+        className="inline-block after:mx-1 after:-mb-0.5 after:inline-block after:h-4 after:w-1.5 after:animate-blink after:bg-white"
+        ref={responseRef}
+      />
     </div>
   )
 }
